@@ -57,20 +57,8 @@ canvas{max-width:100%;max-height:100%;border:2px solid #3a3a4a;border-radius:8px
 </div>
 <script>
 // ── Config ──
-const GW = window.location.origin;
-let AUTH = '';
-// Try to get token from parent frame's localStorage or URL
-try {
-  const params = new URLSearchParams(window.location.search);
-  AUTH = params.get('token') || '';
-  if (!AUTH) {
-    // Try to read from parent context
-    try { AUTH = parent?.localStorage?.getItem('openclaw-auth-token') || ''; } catch(e){}
-  }
-  if (!AUTH) {
-    try { AUTH = localStorage.getItem('openclaw-auth-token') || ''; } catch(e){}
-  }
-} catch(e){}
+// Fetch live session data from sessions.json (pushed by OpenClaw cron)
+const DATA_URL = 'sessions.json';
 
 // ── State ──
 const cv = document.getElementById('cv');
@@ -110,21 +98,13 @@ window.pick=function(k){sel=sel===k?null:k;renderRoster();};
 // ── Data fetch ──
 async function refresh(){
  try{
-  const headers = {'Content-Type':'application/json'};
-  if(AUTH) headers['Authorization'] = 'Bearer '+AUTH;
-  // Try tools/invoke first
-  let res = await fetch(GW+'/tools/invoke',{method:'POST',headers,credentials:'include',body:JSON.stringify({tool:'sessions_list',params:{}}),cache:'no-store'});
+  let res = await fetch(DATA_URL+'?t='+Date.now(),{cache:'no-store'});
   let ok = false, list = [];
   if(res.ok){
    const d = await res.json();
-   if(d?.result?.details?.sessions){list=d.result.details.sessions;ok=true;}
-   else if(d?.result?.content){
-    for(const b of d.result.content){if(b.type==='text'){try{const p=JSON.parse(b.text);if(p?.sessions){list=p.sessions;ok=true;}else if(Array.isArray(p)){list=p;ok=true;}}catch{}}}
-   }
-  }
-  // Fallback: try /health
-  if(!ok){
-   try{const h=await fetch(GW+'/health',{headers,credentials:'include'});if(h.ok)ok=true;}catch{}
+   list=d.sessions||[];
+   ok=d.healthy!==false;
+   if(d.updated){const age=Date.now()-new Date(d.updated).getTime();if(age>300000)ok=false;}
   }
   document.getElementById('dot').className='dot'+(ok?' on':'');
   document.getElementById('hl').textContent=ok?'Crystal Online':'Crystal Dormant';
