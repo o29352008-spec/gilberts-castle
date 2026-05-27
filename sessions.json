@@ -1,1 +1,1 @@
-{"sessions": [{"key": "agent:main:main", "name": "webchat:g-agent-main-main", "model": "claude-opus-4.6", "status": "done", "totalTokens": 152501, "agentId": "main"}], "updated": "2026-05-27T03:15:40Z", "healthy": true}
+{"sessions": [{"key": "agent:main:main", "name": "webchat:g-agent-main-main", "model": "claude-opus-4.6", "status": "running", "totalTokens": 152501, "agentId": "main"}], "updated": "2026-05-27T03:16:49Z", "healthy": true}
