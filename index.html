@@ -185,6 +185,37 @@ function dTorch(x,y,s=3,f=0){
  else if(i===1){d(1,0,'#ff6600');d(0,1,'#ff8c00');d(1,1,'#ffcc00');d(2,1,'#ff8c00');d(1,-1,'#ff4400');}
  else{d(0,0,'#ff4400');d(1,0,'#ffaa00');d(2,0,'#ff8c00');d(1,1,'#ff6600');d(2,1,'#ff2200');}
 }
+
+function dKing(x,y,s=3,f=0){
+ // Dylan the King - sitting on throne
+ const bob=f%60<30?0:-1;
+ const d=(dx,dy,col)=>{ctx.fillStyle=col;ctx.fillRect(x+dx*s,y+dy*s,s,s);};
+ // Crown
+ d(6,bob-2,'#c9a227');d(7,bob-2,'#c9a227');d(8,bob-2,'#c9a227');d(9,bob-2,'#c9a227');
+ d(6,bob-3,'#c9a227');d(9,bob-3,'#c9a227');d(7,bob-4,'#ff4444');d(8,bob-4,'#c9a227');
+ // Head
+ for(let dx=6;dx<=9;dx++)for(let dy=bob-1;dy<=bob+2;dy++)d(dx,dy,'#e8c89e');
+ d(7,bob+1,'#1a1a1a');d(8,bob+1,'#1a1a1a'); // eyes
+ // Royal robe (purple + gold trim)
+ for(let dx=4;dx<=11;dx++)for(let dy=bob+3;dy<=bob+8;dy++)d(dx,dy,'#4a1a6b');
+ // Gold trim
+ for(let dx=4;dx<=11;dx++)d(dx,bob+3,'#c9a227');
+ for(let dx=4;dx<=11;dx++)d(dx,bob+8,'#c9a227');
+ d(4,bob+4,'#c9a227');d(4,bob+5,'#c9a227');d(11,bob+4,'#c9a227');d(11,bob+5,'#c9a227');
+ // Ermine collar (white dots)
+ d(5,bob+3,'#ffffff');d(7,bob+3,'#ffffff');d(9,bob+3,'#ffffff');
+ // Arms resting on throne arms
+ d(3,bob+5,'#e8c89e');d(12,bob+5,'#e8c89e');
+ // Scepter in right hand
+ d(13,bob+3,'#c9a227');d(13,bob+4,'#8b4513');d(13,bob+5,'#8b4513');
+ d(13,bob+2,'#9b59b6'); // gem on top
+ // Legs/boots
+ d(6,bob+9,'#1a1a1a');d(7,bob+9,'#1a1a1a');d(8,bob+9,'#1a1a1a');d(9,bob+9,'#1a1a1a');
+ // Name label
+ ctx.font='10px "Courier New",monospace';ctx.textAlign='center';
+ ctx.fillStyle='#c9a227';ctx.fillText('Dylan',x+7*s,y+bob*s-14);
+}
+
 function draw(){
  const W=cv.width,H=cv.height;
  ctx.fillStyle='#0d0d15';ctx.fillRect(0,0,W,H);
@@ -208,6 +239,8 @@ function draw(){
  ['#8b1a1a','#1a4a8b','#1a6b1a'].forEach((c,i)=>{const bx=[100,400,700][i];ctx.fillStyle='#c9a227';ctx.fillRect(bx-1,15,22,3);ctx.fillStyle=c;ctx.fillRect(bx,18,20,40);ctx.beginPath();ctx.moveTo(bx,58);ctx.lineTo(bx+10,68);ctx.lineTo(bx+20,58);ctx.fill();ctx.fillStyle='#c9a227';ctx.fillRect(bx+7,28,6,6);});
  // Torches
  TORCH.forEach(tp=>{dTorch(tp.x,tp.y,3,frame);const gl=40+Math.sin(frame*.3+tp.x)*8;const g=ctx.createRadialGradient(tp.x+3,tp.y,0,tp.x+3,tp.y,gl);g.addColorStop(0,'rgba(255,140,0,0.15)');g.addColorStop(1,'rgba(255,140,0,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(tp.x+3,tp.y,gl,0,Math.PI*2);ctx.fill();});
+ // King Dylan on throne
+ dKing(382,105,3,frame);
  // Agents
  for(const[id,a]of agents){
   const dx=a.tx-a.x,dy=a.ty-a.y,dist=Math.sqrt(dx*dx+dy*dy);if(dist>2){a.x+=dx/dist*2;a.y+=dy/dist*2;}
